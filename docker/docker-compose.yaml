@@ -1,0 +1,29 @@
+version: '3.1'
+services:
+  bank-api:
+    container_name: bank-api
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ../:/home/app
+      - .venv:/home/app/.venv
+    ports:
+      - ${APP_PORT}:8000
+    depends_on:
+      - bank-api-postgres
+  bank-api-postgres:
+    image: postgres:13-alpine
+    container_name: bank-api-postgres
+    volumes:
+      - bank-api-postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_NAME=bank-api
+      - POSTGRES_DB=bank-api
+    ports:
+      - "5432:5432"
+
+volumes:
+  bank-api-postgres:
