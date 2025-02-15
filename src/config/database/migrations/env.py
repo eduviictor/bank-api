@@ -13,8 +13,8 @@ from config.database.models import ORMBaseModel
 config = context.config
 print(f"settings.DATABASE_URL: {settings.DATABASE_URL}")
 
-config.set_main_option("script_location", "src/config/database/migrations")
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)  # noqa: E501
+config.set_main_option('script_location', 'src/config/database/migrations')
+config.set_main_option('sqlalchemy.url', settings.DATABASE_URL)  # noqa: E501
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -38,12 +38,12 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = config.get_main_option('sqlalchemy.url')
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts={'paramstyle': 'named'},
     )
 
     with context.begin_transaction():
@@ -66,7 +66,7 @@ async def run_migrations_online():
     """
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section),
-        prefix="sqlalchemy.",
+        prefix='sqlalchemy.',
         poolclass=pool.NullPool,
     )
 
