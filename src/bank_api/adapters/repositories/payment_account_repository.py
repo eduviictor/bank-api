@@ -30,14 +30,14 @@ class PaymentAccountRepository(PaymentAccountRepositoryInterface):
             logger.error(f'[PaymentAccountRepository.create] cant create => {str(format_exc())}')
             return None
 
-    async def find_by_id(self, account_id) -> PaymentAccount | None:
+    async def find(self, **kwargs):
         try:
             async with self.context_db_session() as session:
-                query = select(PaymentAccount).where(PaymentAccount.id == account_id)
+                query = select(PaymentAccount).where(and_(*[getattr(PaymentAccount, key) == value for key, value in kwargs.items()]))
                 result = await session.execute(query)
                 return result.scalars().first()
         except Exception as exc:
-            logger.error(f'[PaymentAccountRepository] error find by id {account_id} => {str(exc)}')
+            logger.error(f'[PaymentAccountRepository] error find by {kwargs} => {str(exc)}')
             raise PaymentAccountException(message=str(exc)) from exc
 
     async def find_all(self, **kwargs):
@@ -55,7 +55,7 @@ class PaymentAccountRepository(PaymentAccountRepositoryInterface):
             logger.error(f'[PaymentAccountRepository] error list by {kwargs} => {str(exc)}')
             raise PaymentAccountException(message=str(exc)) from exc
 
-    async def transfer(self, sender: PaymentAccount, receiver: PaymentAccount, amount: int):
+    async def transfer(self, sender: PaymentAccount, receiver: PaymentAccount, amount: int, detail_type: TransactionDetailType):
         try:
             async with self.context_db_session() as session:
                 async with session.begin():
@@ -67,7 +67,7 @@ class PaymentAccountRepository(PaymentAccountRepositoryInterface):
                         balance_after=sender.balance,
                         type=TransactionType.DEBIT,
                         status=TransactionStatus.PENDING,
-                        detail_type=TransactionDetailType.TRANSFER,
+                        detail_type=detail_type,
                         payment_account_id=sender.id
                     )
 
@@ -79,7 +79,7 @@ class PaymentAccountRepository(PaymentAccountRepositoryInterface):
                         balance_after=receiver.balance,
                         type=TransactionType.CREDIT,
                         status=TransactionStatus.PENDING,
-                        detail_type=TransactionDetailType.TRANSFER,
+                        detail_type=detail_type,
                         payment_account_id=receiver.id,
                         parent_transaction_id=transaction_debt.id
                     )
@@ -142,7 +142,7 @@ class PaymentAccountRepository(PaymentAccountRepositoryInterface):
                             id=str(transaction.id),
                             amount=transaction.amount,
                             balance_after=transaction.balance_after,
-                            description=transaction.detail_type.value,
+                            detail_type=transaction.detail_type.value,
                             status=transaction.status.value
                         )
                         for transaction in transactions

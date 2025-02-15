@@ -5,6 +5,7 @@ from bank_api.ports.repository_interface import RepositoryInterface
 from bank_api.schemas.payment_account_schemas import (GetStatementDBOutput,
                                                       GetStatementFilters)
 from config.database.models import PaymentAccount
+from config.database.models.transaction import TransactionDetailType
 
 
 class PaymentAccountRepositoryInterface(RepositoryInterface, ABC):
@@ -13,7 +14,7 @@ class PaymentAccountRepositoryInterface(RepositoryInterface, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def find_by_id(self, account_id: str) -> Optional[PaymentAccount]:
+    async def find(self, **kwargs) -> Optional[PaymentAccount]:
         raise NotImplementedError
 
     @abstractmethod
@@ -21,7 +22,7 @@ class PaymentAccountRepositoryInterface(RepositoryInterface, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def transfer(self, sender: PaymentAccount, receiver: PaymentAccount, amount: int) -> bool:
+    async def transfer(self, sender: PaymentAccount, receiver: PaymentAccount, amount: int, detail_type: TransactionDetailType) -> bool:
         raise NotImplementedError
 
     @abstractmethod

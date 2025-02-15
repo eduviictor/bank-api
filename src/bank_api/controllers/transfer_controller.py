@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 
 from bank_api.middlewares.auth import jwt_bearer_middleware
 from bank_api.ports.transfer_service_interface import TransferServiceInterface
-from bank_api.schemas.transfer_schemas import CreateTransferInput
+from bank_api.schemas.transfer_schemas import (CreateTransferInput,
+                                               MoveInternalFoundsInput)
 
 
 class TransferController:
@@ -22,9 +23,23 @@ class TransferController:
             status_code=200,
         )
 
+        self.router.add_api_route(
+            '/move-internal-founds',
+            self.__move,
+            methods=['POST'],
+            status_code=200,
+        )
+
     async def __transfer(
         self,
         params: CreateTransferInput,
         token_data: Dict = Depends(jwt_bearer_middleware)
     ):
         return await self.service.transfer(params)
+
+    async def __move(
+        self,
+        params: MoveInternalFoundsInput,
+        token_data: Dict = Depends(jwt_bearer_middleware)
+    ):
+        return await self.service.move_internal_founds(params)

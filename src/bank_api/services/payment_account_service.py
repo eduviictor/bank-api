@@ -9,13 +9,13 @@ from bank_api.schemas.payment_account_schemas import (GetBalanceOutput,
 
 class PaymentAccountService(PaymentAccountServiceInterface):
     async def get_balance(self, payment_account_id: str) -> GetBalanceOutput:
-        account = await self.payment_account_repository.find_by_id(payment_account_id)
+        account = await self.payment_account_repository.find(id=payment_account_id)
         if not account:
             raise HttpException(message='Account not found', code=HTTPStatus.NOT_FOUND)
         return GetBalanceOutput(balance=account.balance)
 
     async def statement(self, payment_account_id: str, filters: GetStatementFilters):
-        account = await self.payment_account_repository.find_by_id(payment_account_id)
+        account = await self.payment_account_repository.find(id=payment_account_id)
         if not account:
             raise HttpException(message='Account not found', code=HTTPStatus.NOT_FOUND)
 

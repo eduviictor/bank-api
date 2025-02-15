@@ -14,7 +14,7 @@ class StatementItem(BaseModel):
     id: str
     amount: int
     balance_after: int
-    description: str
+    detail_type: str
     status: str
 
 class GetStatementDBOutput(BaseModel):
