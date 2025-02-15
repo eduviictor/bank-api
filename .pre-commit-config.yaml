@@ -5,6 +5,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: double-quote-string-fixer
+        exclude: /migrations/
       - id: pretty-format-json
         args: [--autofix]
       - id: check-json
@@ -14,7 +15,7 @@ repos:
     hooks:
       - id: ruff
         args: ["--fix"]
-      - id: ruff-format
+        exclude: /migrations/
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:

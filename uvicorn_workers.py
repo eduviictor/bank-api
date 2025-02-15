@@ -4,7 +4,6 @@ import threading
 import time
 from typing import Any
 
-
 from uvicorn.workers import UvicornWorker
 
 
@@ -23,7 +22,6 @@ class ReloaderThread(threading.Thread):
 
 
 class RestartableUvicornWorker(UvicornWorker):
-
     CONFIG_KWARGS = {'loop': 'uvloop', 'http': 'httptools'}
 
     def __init__(self, *args: list[Any], **kwargs: dict[str, Any]):
