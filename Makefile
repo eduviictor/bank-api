@@ -1,7 +1,6 @@
 PYPATH=./src
 
 install:
-	. venv/bin/activate
 	poetry lock --no-update
 	poetry install
 
