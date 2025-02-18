@@ -7,7 +7,7 @@ services:
       dockerfile: ./docker/Dockerfile
     volumes:
       - ../:/home/app
-      - .venv:/home/app/.venv
+      - ./.venv:/home/app/.venv
     ports:
       - ${APP_PORT}:8000
     depends_on:
