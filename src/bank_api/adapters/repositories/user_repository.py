@@ -19,19 +19,14 @@ class UserRepository(UserRepositoryInterface):
             logger.error(f'[UserRepository.create] cant create => {str(format_exc())}')
             return None
 
-    async def find_by_id(self, **kwargs) -> User | None:
-        conditions = []
-        for key, value in kwargs.items():
-            conditions.append(getattr(User, key) == value)
-
+    async def find_by_id(self, user_id: int) -> User | None:
         try:
             async with self.context_db_session() as session:
-                query = select(User).where(and_(*conditions))
-
+                query = select(User).where(User.id == user_id)
                 result = await session.execute(query)
                 return result.scalar_one_or_none()
         except Exception as exc:
-            logger.error(f'[UserRepository] error get by {kwargs} => {str(exc)}')
+            logger.error(f'[UserRepository] error get by id {user_id} => {str(exc)}')
             return None
 
     async def find_all(self, **kwargs):

@@ -11,6 +11,7 @@ from bank_api.ports.payment_account_repository_interface import \
 from bank_api.schemas.payment_account_schemas import (GetStatementDBOutput,
                                                       GetStatementFilters,
                                                       StatementItem)
+from bank_api.schemas.transfer_schemas import CreateTransferDBOutput
 from bank_api.utils.log import logger
 from config.database.models.payment_account import PaymentAccount
 from config.database.models.transaction import (Transaction,
@@ -55,7 +56,7 @@ class PaymentAccountRepository(PaymentAccountRepositoryInterface):
             logger.error(f'[PaymentAccountRepository] error list by {kwargs} => {str(exc)}')
             raise PaymentAccountException(message=str(exc)) from exc
 
-    async def transfer(self, sender: PaymentAccount, receiver: PaymentAccount, amount: int, detail_type: TransactionDetailType):
+    async def transfer(self, sender: PaymentAccount, receiver: PaymentAccount, amount: int, detail_type: TransactionDetailType) -> CreateTransferDBOutput:
         try:
             async with self.context_db_session() as session:
                 async with session.begin():
@@ -87,6 +88,10 @@ class PaymentAccountRepository(PaymentAccountRepositoryInterface):
 
                     session.add_all([sender, receiver, transaction_credit])
                     await session.commit()
+                    return CreateTransferDBOutput(
+                        credit_transaction_id=str(transaction_credit.id),
+                        debit_transaction_id=str(transaction_debt.id)
+                    )
         except Exception as exc:
             logger.error(f'[PaymentAccountRepository.transfer] error during transfer => {str(exc)}')
             raise PaymentAccountException(message=str(exc)) from exc

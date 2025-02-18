@@ -1,15 +1,4 @@
-# install-pyenv:
-# 	@command -v pyenv >/dev/null 2>&1 || curl https://pyenv.run | bash
-
-# setup-project:install-pyenv
-# 	pyenv versions | grep 3.12.0 || pyenv install 3.12.0
-# 	pyenv local 3.12.0
-# 	python --version
-# 	python -m venv venv
-# 	. venv/bin/activate
-# 	pip install --upgrade pip
-# 	pip install poetry
-# 	poetry install --only dev --no-root
+PYPATH=./src
 
 install:
 	. venv/bin/activate
@@ -28,9 +17,11 @@ seed:
 pre-commit:
 	@poetry run pre-commit run --all-files
 
-tests:
-	@echo "Running tests"
-	@poetry run pytest --disable-warnings -vv --cov-report=html --cov .
+test:
+	@poetry run pytest tests/adapters/repositories/test_user_repository.py -vv
+
+test-coverage:
+	@poetry run pytest -vv --cov-report=html --cov .
 
 up:
 	docker compose --env-file=.env -f docker/docker-compose.yaml up --build -d

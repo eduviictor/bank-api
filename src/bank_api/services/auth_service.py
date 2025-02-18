@@ -9,7 +9,7 @@ class AuthService(AuthServiceInterface):
     async def authenticate(self, username: str, password: str) -> bool:
         user = await self.user_repository.get_by_username(username)
 
-        if verify_password(password, user.password):
+        if user and verify_password(password, user.password):
             access_token = self.auth_adapter.generate_token(
                 username=user.username,
                 expires_in=3600,

@@ -4,11 +4,14 @@ from bank_api.exceptions.http_exceptions import HttpException
 from bank_api.exceptions.payment_account_exceptions import \
     PaymentAccountException
 from bank_api.ports.transfer_service_interface import TransferServiceInterface
-from bank_api.schemas.payment_account_schemas import GetBalanceOutput
 from bank_api.schemas.transfer_schemas import (CreateTransferInput,
+                                               CreateTransferOutput,
                                                MoveInternalFoundsInput,
+                                               MoveInternalFoundsOutput,
                                                MoveInternalFoundsType)
-from config.database.models.payment_account import PaymentAccountType
+from bank_api.utils.log import logger
+from config.database.models.payment_account import (PaymentAccount,
+                                                    PaymentAccountType)
 from config.database.models.transaction import TransactionDetailType
 
 
@@ -27,8 +30,8 @@ class TransferService(TransferServiceInterface):
             raise HttpException(code=HTTPStatus.BAD_REQUEST, message='Insufficient funds')
 
         try:
-            await self.payment_account_repository.transfer(sender_account, receiver_account, params.amount)
-            return GetBalanceOutput(balance=sender_account.balance)
+            result = await self.payment_account_repository.transfer(sender_account, receiver_account, params.amount)
+            return CreateTransferOutput(balance=sender_account.balance, transaction_id=result.debit_transaction_id)
         except PaymentAccountException as exc:
             raise HttpException(code=HTTPStatus.BAD_REQUEST, message=str(exc))
         except Exception as exc:
@@ -47,30 +50,31 @@ class TransferService(TransferServiceInterface):
             if params.type == MoveInternalFoundsType.INVESTMENT:
                 raise HttpException(code=HTTPStatus.BAD_REQUEST, message='Cannot invest to a checking account')
 
-            account_receiver = await self.payment_account_repository.find(tax_id=account.tax_id, account_type=PaymentAccountType.SAVINGS)
+            return await self.__process_move_founds(account, params.amount, TransactionDetailType.WITHDRAW_TRANSFER, PaymentAccountType.SAVINGS)
 
-            if not account_receiver:
-                raise HttpException(code=HTTPStatus.NOT_FOUND, message='Savings account not found')
-            detail_type = TransactionDetailType.WITHDRAW_TRANSFER
-
-        if account.account_type == PaymentAccountType.SAVINGS:
+        else:
             if params.type == MoveInternalFoundsType.WITHDRAW:
                 raise HttpException(code=HTTPStatus.BAD_REQUEST, message='Cannot withdraw from a savings account')
 
-            account_receiver = await self.payment_account_repository.find(tax_id=account.tax_id, account_type=PaymentAccountType.CHECKING)
+            return await self.__process_move_founds(account, params.amount, TransactionDetailType.INVESTMENT, PaymentAccountType.CHECKING)
 
-            if not account_receiver:
-                raise HttpException(code=HTTPStatus.NOT_FOUND, message='Checking account not found')
-            detail_type = TransactionDetailType.INVESTMENT
+    async def __process_move_founds(self, sender: PaymentAccount, amount: int, detail_type: TransactionDetailType, account_type: PaymentAccountType):
+        account_receiver = await self.payment_account_repository.find(tax_id=sender.tax_id, account_type=account_type)
+        logger.info(f'account_receiver: {account_receiver}')
+        if not account_receiver:
+            raise HttpException(code=HTTPStatus.NOT_FOUND, message='Account not found')
 
         try:
             await self.payment_account_repository.transfer(
-                sender=account,
+                sender=sender,
                 receiver=account_receiver,
-                amount=params.amount,
+                amount=amount,
                 detail_type=detail_type
             )
-            return GetBalanceOutput(balance=account.balance)
+            return MoveInternalFoundsOutput(
+                checking_balance=sender.balance if sender.account_type == PaymentAccountType.CHECKING else account_receiver.balance,
+                savings_balance=sender.balance if sender.account_type == PaymentAccountType.SAVINGS else account_receiver.balance,
+            )
         except PaymentAccountException as exc:
             raise HttpException(code=HTTPStatus.BAD_REQUEST, message=str(exc))
         except Exception as exc:

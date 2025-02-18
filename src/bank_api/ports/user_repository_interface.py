@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from bank_api.ports.repository_interface import RepositoryInterface
-from config.database.models import PaymentAccount
 from config.database.models.user import User
 
 
@@ -12,11 +11,11 @@ class UserRepositoryInterface(RepositoryInterface, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def find_by_id(self, user_id: int) -> Optional[PaymentAccount]:
+    def find_by_id(self, user_id: int) -> Optional[User]:
         raise NotImplementedError
 
     @abstractmethod
-    def find_all(self) -> List[PaymentAccount]:
+    def find_all(self) -> List[User]:
         raise NotImplementedError
 
     @abstractmethod
