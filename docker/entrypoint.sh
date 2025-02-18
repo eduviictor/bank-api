@@ -40,7 +40,7 @@ export ENVIRONMENT=${ENVIRONMENT:-development}
 export PORT=${APP_PORT:-8000}
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHONPATH=/home/app
-
+make seed
 python3 -m poetry run debugpy --listen 0.0.0.0:5676 -m gunicorn "src.main:create_app()" \
     --worker-class uvicorn_workers.RestartableUvicornWorker \
     --bind 0.0.0.0:$PORT \
