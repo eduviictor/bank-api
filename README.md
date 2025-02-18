@@ -52,11 +52,9 @@ Para rodar o projeto utilizando Docker, siga os passos abaixo:
 
 O servidor estará rodando em `http://localhost:8000`.
 
-
 ## Seeds
 
 Ao rodar o Docker, um seed é criado automaticamente. Este seed inclui um usuário padrão com as credenciais `admin:admin` e algumas contas de pagamento. Para mais detalhes, consulte o arquivo `/scripts/seeds.py`.
-
 
 ## Testes
 
@@ -72,4 +70,16 @@ Para rodar os testes com o coverage, utilize o comando:
 make test-coverage
 ```
 
-Para verificar o coverage abra o arquivo /htmlcov/index.html no seu navegador.
+Para verificar o coverage abra o arquivo `/htmlcov/index.html` no seu navegador.
+
+## Documentação
+
+Para verificar a documentação do projeto, acesse:
+
+- [Swagger UI](http://localhost:8000/docs)
+- [ReDoc](http://localhost:8000/redoc)
+
+
+## Insomnia
+
+Na pasta `/docs` existe um arquivo chamado `bank-api.json` que pode ser importado no Insomnia.
