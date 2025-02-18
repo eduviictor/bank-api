@@ -18,7 +18,7 @@ pre-commit:
 	@poetry run pre-commit run --all-files
 
 test:
-	@poetry run pytest tests/adapters/repositories/test_user_repository.py -vv
+	@poetry run pytest . -vv
 
 test-coverage:
 	@poetry run pytest -vv --cov-report=html --cov .
