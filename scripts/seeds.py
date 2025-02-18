@@ -41,8 +41,15 @@ async def create_payment_account_seed_data():
                 )
                 return
 
+            ids = [
+                '550e8400-e29b-41d4-a716-446655440000',
+                '550e8400-e29b-41d4-a716-446655440001',
+                '550e8400-e29b-41d4-a716-446655440002'
+            ]
+
             payments_accounts = [
                 PaymentAccount(
+                    id=ids[0],
                     status=PaymentAccountStatusEnum.OPEN,
                     name='Checking Account 1',
                     institution_code='001',
@@ -53,6 +60,7 @@ async def create_payment_account_seed_data():
                     balance=100000,
                 ),
                 PaymentAccount(
+                    id=ids[1],
                     status=PaymentAccountStatusEnum.OPEN,
                     name='Savings Account 1',
                     institution_code='001',
@@ -63,6 +71,7 @@ async def create_payment_account_seed_data():
                     balance=1,
                 ),
                 PaymentAccount(
+                    id=ids[2],
                     status=PaymentAccountStatusEnum.OPEN,
                     name='Checking Account 2',
                     institution_code='001',

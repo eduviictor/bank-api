@@ -54,7 +54,7 @@ O servidor estará rodando em `http://localhost:8000`.
 
 ## Seeds
 
-Ao rodar o Docker, um seed é criado automaticamente. Este seed inclui um usuário padrão com as credenciais `admin:admin` e algumas contas de pagamento. Para mais detalhes, consulte o arquivo `/scripts/seeds.py`.
+Ao rodar o Docker, um seed é criado automaticamente. Este seed inclui um usuário padrão com as credenciais `admin:admin` e algumas contas de pagamento. Para mais detalhes, consulte o arquivo `/scripts/seeds.py`. Lá vai ter exatamente qual id você utilizar na requisição dependendo do que for fazer.
 
 ## Testes
 

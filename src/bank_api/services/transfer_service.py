@@ -30,7 +30,7 @@ class TransferService(TransferServiceInterface):
             raise HttpException(code=HTTPStatus.BAD_REQUEST, message='Insufficient funds')
 
         try:
-            result = await self.payment_account_repository.transfer(sender_account, receiver_account, params.amount)
+            result = await self.payment_account_repository.transfer(sender_account, receiver_account, params.amount, TransactionDetailType.TRANSFER)
             return CreateTransferOutput(balance=sender_account.balance, transaction_id=result.debit_transaction_id)
         except PaymentAccountException as exc:
             raise HttpException(code=HTTPStatus.BAD_REQUEST, message=str(exc))

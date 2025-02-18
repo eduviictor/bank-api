@@ -10,8 +10,11 @@ migrations:
 migrate:
 	poetry run alembic upgrade head
 
-seed:
+seed-local:
 	docker compose --env-file=.env -f docker/docker-compose.yaml exec bank-api poetry run python scripts/seeds.py
+
+seed:
+	poetry run python scripts/seeds.py
 
 pre-commit:
 	@poetry run pre-commit run --all-files
